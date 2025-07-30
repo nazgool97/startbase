@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Users – Admin</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 font-sans">
+  <div class="max-w-4xl mx-auto mt-12 p-6 bg-white rounded shadow">
+    <h2 class="text-3xl font-bold mb-6 text-center text-gray-800">User List</h2>
+    <table class="table-auto w-full text-left border">
+      <thead>
+        <tr class="bg-gray-200">
+          <th class="px-4 py-2 border">ID</th>
+          <th class="px-4 py-2 border">Email</th>
+          <th class="px-4 py-2 border">Role</th>
+          <th class="px-4 py-2 border">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{ range .Users }}
+        <tr class="hover:bg-gray-50">
+          <td class="px-4 py-2 border">{{ .ID }}</td>
+          <td class="px-4 py-2 border">{{ .Email }}</td>
+          <td class="px-4 py-2 border">
+            <select data-id="{{ .ID }}"
+              class="bg-white border px-3 py-2 rounded w-full">
+              <option value="user"  {{ if eq .Role "user"  }}selected{{ end }}>User</option>
+              <option value="admin" {{ if eq .Role "admin" }}selected{{ end }}>Admin</option>
+            </select>
+          </td>
+          <td class="px-4 py-2 border text-center">
+            <button onclick="setRole({{ .ID }}, this)"
+              class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">
+              Save
+            </button>
+          </td>
+        </tr>
+        {{ end }}
+      </tbody>
+    </table>
+    <div class="mt-6 text-center">
+      <a href="/admin/dashboard"
+         class="text-blue-500 hover:underline text-sm">← Back to Dashboard</a>
+    </div>
+  </div>
+
+  <script>
+    function setRole(id, btn) {
+      const role = btn.closest('tr').querySelector('select').value;
+      fetch(`/admin/users/${id}/role`, {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({role})
+      }).then(() => location.reload());
+    }
+  </script>
+</body>
+</html>
